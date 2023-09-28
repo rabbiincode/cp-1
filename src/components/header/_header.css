@@ -1,0 +1,59 @@
+.header{
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #000;
+  font-size: 1.5rem;
+  box-shadow: 0 5px 10px rgba(212, 210, 210, 0.5), 0 -5px 10px rgba(212, 210, 210, 0.5);
+  z-index: 200;
+  padding-right: 3rem;
+  margin-top: 7rem;
+}
+
+.change-header-background{
+  background: #e0eced;
+}
+
+.box{
+  position: relative;
+  padding: 2rem;
+  cursor: pointer;
+}
+
+.box:hover, .active-link{
+  background: #00635B;
+  color: #fff;
+}
+
+.triangle{
+  width: 0;
+  height: 0;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  border-left: 15px solid #00635B;
+  position: absolute;
+  right: -13px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  display: none;
+  transition: opacity 0.3s;
+}
+
+.box:hover .triangle{
+  display: flex;
+}
+
+.active-link .triangle{
+  display: flex;
+}
+
+@media (max-width: 768px){
+  .header{
+    margin-top: 0;
+  }
+}
