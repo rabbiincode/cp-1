@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Checkbox, Select, Space, Switch } from 'antd';
 import './_application.css'
 
@@ -6,6 +6,7 @@ const Application = () => {
   const [createQuestion, setCreateQuestion] = useState<[]>([])
   const [imageUrl, setImageUrl] = useState<string>('')
   const [imageName, setImageName] = useState<string>('')
+  const [selected, setSelected] = useState<string>('Paragraph')
   const [switchState, setSwitchState] = useState<boolean>(false)
   const [selectedFile, setSelectedFile] = useState(null)
   const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ const Application = () => {
 
   const infos: Info[] = [
     {
-      title: ''
+      title: 'Phone (without dial code)'
     },
     {
       title: 'Nationality'
@@ -73,52 +74,15 @@ const Application = () => {
     console.log(checked)
   }
 
-  const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
-  }
-
-  const handleCreateQuestion = () => {
-    const newQuestion = 
-    <div key={createQuestion.length} className="new-question box-1">
-      <div className='heading'>Questions</div>
-      <div className='content'>
-      <div className='create-question'>
-        <label for="groupSize">Type</label>
-        <Select
-          defaultValue="Paragraph"
-          onChange={handleChange}
-          options={[
-            { value: 'Paragraph', label: 'Paragraph' },
-            { value: 'Short answer', label: 'Short answer' },
-            { value: 'Yes/No', label: 'Yes/No' },
-            { value: 'Dropdown', label: 'Dropdown' },
-            { value: 'Multiple choice', label: 'Multiple choice' },
-            { value: 'Date', label: 'Date' },
-            { value: 'Number', label: 'Number' },
-            { value: 'file-upload', label: 'file-upload' },
-            { value: 'video-question', label: 'video-question' },
-          ]}
-        />
-      </div>
-      <div className='create-question'>
-        <label for="groupSize">Question</label>
-        <input type="text" placeholder='Type here' id="question" value=''/>
-      </div>
-      <div className='delete'>
-        <span>
-          <img src='/images/close.png' alt='img'/>
-          Delete Question
-        </span>
-        <button>Save</button>
-      </div>
-      </div>
-    </div>
-    setCreateQuestion([...createQuestion, newQuestion])
+  const handleSelectChange = (value: string) => {
+    setSelected(value)
+    console.log(value)
+    console.log(selected)
   }
 
   const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
   }
 
   const handleSubmit = (e) => {
@@ -138,6 +102,82 @@ const Application = () => {
     .catch((error) => {
       console.error('API Error:', error);
     })
+  }
+
+  useEffect(() => {
+    // Check if the selected value is 'Multiple choice'
+    console.log(selected)
+  }, [selected])
+
+  const handleCreateQuestion = () => {
+    const questionId = createQuestion.length
+    const newQuestion = 
+    <div key={questionId} className="new-question box-1">
+      <div className='heading'>Questions</div>
+      <div className='content'>
+      <div className='create-question'>
+        <label for="groupSize">Type</label>
+        <Select
+          defaultValue="Paragraph"
+          onChange={handleSelectChange}
+          options={[
+            { value: 'Paragraph', label: 'Paragraph' },
+            { value: 'Short answer', label: 'Short answer' },
+            { value: 'Yes/No', label: 'Yes/No' },
+            { value: 'Dropdown', label: 'Dropdown' },
+            { value: 'Multiple choice', label: 'Multiple choice' },
+            { value: 'Date', label: 'Date' },
+            { value: 'Number', label: 'Number' },
+            { value: 'file-upload', label: 'file-upload' },
+            { value: 'video-question', label: 'video-question' },
+          ]}
+        />
+      </div>
+      <div className='create-question'>
+        <label for="groupSize">Question</label>
+        <input type="text" placeholder='Type here' id="question" value=''/>
+      </div>
+
+      {
+        selected === 'Multiple choice' && (
+          <div>
+            <div className='create-question'>
+              <label for="groupSize">Max choice allowed</label>
+              <input type="text" placeholder='Enter no of choices allowed here' id="question" value=''/>
+            </div>
+
+            <div className='question-2 question-3'>
+              <span className='choice'>Choice</span>
+                <span className='image'>
+                <img src='/images/list.png' alt='img' className='img-3'/>
+                <input placeholder='Type here' type='text'/>
+                <img src='/images/add.png' alt='img' className='add-3'/>
+              </span>
+            </div>
+            <span className='enable'>
+              <input type='checkbox'/>
+              <span>Enable "Other" option</span>
+            </span>
+          </div>
+        )
+      }
+
+      <div className='delete'>
+        <span>
+          <img src='/images/close.png' alt='img' onClick={handleDeleteQuestion}/>
+          Delete Question
+        </span>
+        <button>Save</button>
+      </div>
+      </div>
+    </div>
+    setCreateQuestion([...createQuestion, newQuestion])
+  }
+
+  const handleDeleteQuestion = (questionId) => {
+    // Filter out the question with the given ID from the createQuestion array
+    const updatedQuestions = createQuestion.filter((question, index) => index !== questionId);
+    setCreateQuestion(updatedQuestions);
   }
 
   return (
@@ -160,7 +200,7 @@ const Application = () => {
             imageName &&
             <div className='remove'>
               <button onClick={handleDelete}>
-                <img src='/images/close.png' alt='img'/>
+                <img src='/images/close.png' alt='img' onClick={handleDeleteQuestion}/>
                 Delete & re-upload
               </button>
             </div>
@@ -172,10 +212,9 @@ const Application = () => {
           </div>
           <div className='form'>
             <form>
-              <input placeholder='First Name'  type='text' id="firstName" required value={formData.firstName} onChange={handleChange}/>
-              <input placeholder='Last Name' type='text' id="lastName" required value={formData.lastName} onChange={handleChange}/>
-              <input placeholder='Email Name' type='email' id="email" required value={formData.email} onChange={handleChange}/>
-              <input placeholder='Phone' type='text' id="phone" required value={formData.phone} onChange={handleChange}/>
+              <input placeholder='First Name'  type='text' id="firstName" required value={formData.firstName} onChange={handleFormChange}/>
+              <input placeholder='Last Name' type='text' id="lastName" required value={formData.lastName} onChange={handleFormChange}/>
+              <input placeholder='Email Name' type='email' id="email" required value={formData.email} onChange={handleFormChange}/>
             </form>
             {
               infos.map((info, index) => (
@@ -257,7 +296,7 @@ const Application = () => {
 
               <div className='delete'>
                 <span>
-                  <img src='/images/close.png' alt='img'/>
+                  <img src='/images/close.png' alt='img' onClick={handleDeleteQuestion}/>
                   Delete Question
                 </span>
                 <button>Save</button>

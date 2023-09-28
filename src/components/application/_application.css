@@ -64,6 +64,15 @@ option:hover{
   padding: 2rem;
 }
 
+.enable{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
 /* Create Question Styling End */
 
 .application{
@@ -309,6 +318,7 @@ label{
 .delete > span > img{
   width: 1.5rem;
   height: 1.5rem;
+  cursor: pointer;
 }
 
 .delete > button{

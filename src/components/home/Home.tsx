@@ -4,7 +4,7 @@ import './_home.css'
 const Home = () => {
   return (
     <div className='home'>
-      <span className='text'>Application Portal</span>
+      <p className='text-3'>Application Portal</p>
     </div>
   )
 }
