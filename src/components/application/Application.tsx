@@ -88,7 +88,7 @@ const Application = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    fetch('http://127.0.0.1:4010/api/1.0/application-form', {
+    fetch('http://127.0.0.1:4010/api/1.0/programs/application-form', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
