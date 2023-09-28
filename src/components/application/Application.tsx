@@ -6,7 +6,16 @@ const Application = () => {
   const [createQuestion, setCreateQuestion] = useState<[]>([])
   const [imageUrl, setImageUrl] = useState<string>('')
   const [imageName, setImageName] = useState<string>('')
+  const [switchState, setSwitchState] = useState<boolean>(false)
   const [selectedFile, setSelectedFile] = useState(null)
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    checked: false
+    // Add more form fields here...
+  })
 
   interface Info {
     title: String;
@@ -59,6 +68,11 @@ const Application = () => {
     setImageName('')
   }
 
+  const onSwitchToggle = (checked: boolean) => {
+    setSwitchState(checked)
+    console.log(checked)
+  }
+
   const handleChange = (value: string) => {
     console.log(`selected ${value}`);
   }
@@ -102,6 +116,30 @@ const Application = () => {
     setCreateQuestion([...createQuestion, newQuestion])
   }
 
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    fetch('http://127.0.0.1:4010/api/1.0/application-form', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log('API Response:', data);
+    })
+    .catch((error) => {
+      console.error('API Error:', error);
+    })
+  }
+
   return (
     <div className='application'>
       <div className='body'>
@@ -134,18 +172,18 @@ const Application = () => {
           </div>
           <div className='form'>
             <form>
-              <input placeholder='First Name'  type='text' id="firstName" required/>
-              <input placeholder='Last Name' type='text' id="lastName" required/>
-              <input placeholder='Email Name' type='email' id="email" required/>
-              <input placeholder='Phone' type='text' id="phone" required/>
+              <input placeholder='First Name'  type='text' id="firstName" required value={formData.firstName} onChange={handleChange}/>
+              <input placeholder='Last Name' type='text' id="lastName" required value={formData.lastName} onChange={handleChange}/>
+              <input placeholder='Email Name' type='email' id="email" required value={formData.email} onChange={handleChange}/>
+              <input placeholder='Phone' type='text' id="phone" required value={formData.phone} onChange={handleChange}/>
             </form>
             {
-              infos.map((info) => (
-                <div className='row-1'>
+              infos.map((info, index) => (
+                <div className='row-1' key={index}>
                   <span className='title-1'>{info.title}</span>
                   <span className='switch'>
                     <span><Checkbox/> Internal</span>
-                    <span><Switch defaultChecked/> Hide</span>
+                    <span><Switch onChange={onSwitchToggle}/> {!switchState ? 'Hide' : 'Show'}</span>
                   </span>
                 </div>
               ))
@@ -163,12 +201,12 @@ const Application = () => {
           </div>
           <div className='form'>
             {
-              profile.map((info) => (
-                <div className='row-1'>
+              profile.map((info, index) => (
+                <div className='row-1' key={index}>
                   <span className='title-1'>{info.title}</span>
                   <span className='switch'>
                     <span><Checkbox/> Mandatory</span>
-                    <span><Switch defaultChecked/> Hide</span>
+                    <span><Switch onChange={onSwitchToggle}/> {!switchState ? 'Hide' : 'Show'}</span>
                   </span>
                 </div>
               ))
@@ -239,7 +277,7 @@ const Application = () => {
               <span>Add a question</span>
             </div>
           </div>
-        {createQuestion}
+          {createQuestion}
         </div>
       </div>
     </div>
